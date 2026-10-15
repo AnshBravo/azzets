@@ -1,6 +1,6 @@
 import express, { type Request, type Response } from "express";
 import cors from "cors";
-import { METHODS } from "node:http";
+import { errorHandler } from "./middlewares/errorHandler.js";
 const app = express();
 
 const corsOptions = {
@@ -13,13 +13,15 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 6500;
-
 app.get("/health", (req: Request, res: Response) => {
   res
     .status(200)
     .json({ status: "ok", message: `Server is running on PORT: ${PORT}` });
 });
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 6500;
 
 app.listen(PORT, () => {
   console.log(`Server is listening on PORT: ${PORT} ⚡`);
