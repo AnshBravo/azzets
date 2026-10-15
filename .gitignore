@@ -1,0 +1,44 @@
+# ==========================================
+# Dependencies (Never commit these!)
+# ==========================================
+**/node_modules/
+**/ENV/
+
+# ==========================================
+# Environment Variables & Secrets (CRITICAL)
+# ==========================================
+**/.env
+**/.env.local
+**/.env.*.local
+**/local.properties
+
+# ==========================================
+# Production Builds & Outputs
+# ==========================================
+**/dist/
+**/.next/
+**/build/
+**/out/
+
+# ==========================================
+# Logs and Diagnostics
+# ==========================================
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# ==========================================
+# System & Editor Files
+# ==========================================
+.DS_Store
+Thumbs.db
+**/.vscode/
+**/.idea/
+
+# 3d files
+**/public/assets/models/
+*.glb
+*.gltf
+*.obj
+*.fbx
