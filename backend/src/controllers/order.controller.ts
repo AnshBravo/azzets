@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import { prisma } from "../db/db.js";
 import { ApiError } from "../utils/ApiError.js";
 import { stripe } from "../services/stripeService.js";
@@ -89,4 +89,66 @@ export const createCheckoutSession = async (
     status: "successful",
     checkoutUrl: session.url,
   });
+};
+
+export const handleStripeWebhook = async (req: Request, res: Response) => {
+  const sig = req.headers["stripe-signature"];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!sig || !webhookSecret) {
+    throw ApiError.badRequest(
+      "Missing Stripe structural signature or backend webhook credentials",
+    );
+  }
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      (req as any).rawBody || req.body,
+      sig,
+      webhookSecret,
+    );
+  } catch (err: any) {
+    console.error(`❌ Webhook Signature Verification Failed: ${err.message}`);
+    throw new ApiError(400, `Webhook Error: ${err.message}`);
+  }
+
+  res.status(200).json({ received: true });
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as any;
+
+    const buyerId = session.metadata?.buyerId;
+    const assetId = session.metadata?.assetId;
+    const stripePaymentIntentId = session.payment_intent as string;
+    const amountTotal = session.amount_total ? session.amount_total / 100 : 0;
+
+    if (!buyerId || !assetId) {
+      console.error(
+        "💥 Critical Webhook Failure: Session metadata is completely missing data blocks.",
+      );
+      return;
+    }
+
+    try {
+      await prisma.order.create({
+        data: {
+          buyerId,
+          assetId,
+          stripePaymentIntentId,
+          amount: amountTotal,
+          status: "COMPLETED",
+        },
+      });
+      console.log(
+        `🎉 Order compiled successfully for Buyer: ${buyerId} -> Asset: ${assetId}`,
+      );
+    } catch (dbError) {
+      console.error(
+        "💥 Database Error while capturing completed webhook order:",
+        dbError,
+      );
+    }
+  }
 };
