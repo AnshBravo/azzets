@@ -11,3 +11,65 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  username        String   @unique
+  stripeConnectId String?
+  avatarUrl       String?
+  bio             String?
+
+  // Relations
+  assets          Asset[]
+  orders          Order[]  
+}
+
+model Asset {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String
+  licenseType String
+  price       Decimal  @db.Decimal(10, 2) // Best practice for currency precision
+
+  // Relations
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade) 
+  creatorId   String
+
+  files       AssetFile[]
+  orders      Order[]  // Renamed from assetId for clarity
+
+  @@index([category])
+  @@index([creatorId])
+}
+
+model AssetFile {
+  id       String   @id @default(uuid())
+  fileType String
+  s3Key    String
+  fileSize Int      // Changed to Int for byte size
+
+  // Relations
+  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assetId  String
+
+  @@index([assetId])
+}
+
+model Order {
+  id                    String   @id @default(uuid())
+  buyerId               String
+  assetId               String
+  stripePaymentIntentId String   @unique // Added unique constraint
+  amount                Decimal  @db.Decimal(10, 2)
+  status                String
+
+  // Relations
+  buyer                 User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  asset                 Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  //Indices
+  @@index([buyerId])
+  @@index([assetId])
+}
