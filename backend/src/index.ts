@@ -10,7 +10,16 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req: any, res, buf) => {
+      if (req.originalUrl.startsWith("/api/webhook")) {
+        req.rawBody = buf;
+      }
+    },
+  }),
+);
+
 app.use(cors(corsOptions));
 
 app.get("/health", (req: Request, res: Response) => {
