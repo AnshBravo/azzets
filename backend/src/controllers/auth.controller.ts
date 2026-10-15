@@ -3,6 +3,7 @@ import { prisma } from "../db/db.js";
 import { ApiError } from "../utils/ApiError.js";
 import { JwtUtil } from "../utils/jwt.js";
 import bcrypt from "bcryptjs";
+import type { AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -94,5 +95,31 @@ export const login = async (req: Request, res: Response) => {
     status: "successful",
     user: sanitizedUser,
     token,
+  });
+};
+
+export const getMe = async (req: AuthenticatedRequest, res: Response) => {
+  const currentUserId = req.user?.userId;
+
+  if (!currentUserId) {
+    throw ApiError.unauthorized("User is not authenticated");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: currentUserId,
+    },
+  });
+
+  if (!user) {
+    throw ApiError.notFound("User profile couldn't be located.");
+  }
+
+  const { hashedPassword: _, ...sanitizedUser } = user;
+
+  res.status(200).json({
+    success: true,
+    status: "successful",
+    user: sanitizedUser,
   });
 };
