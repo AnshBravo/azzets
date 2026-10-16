@@ -13,7 +13,7 @@ interface AuthContextTypes {
 
 const AuthContext = createContext<AuthContextTypes | undefined>(undefined);
 
-export const authProvider: React.FC<{ children: React.ReactNode }> = ({
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const queryClient = useQueryClient();

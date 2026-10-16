@@ -1,31 +1,194 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+/* ==========================================================
+   SOLAR CHALK DESIGN SYSTEM: (Tailwind v4 Light-Mode Config)
+   Core Colors: Yellow (#f9c74f), Amber (#f9b24e), Orange (#f3722c), Red (#f94144)
+   ========================================================== */
+@theme {
+  --font-sans: "Pliant", system-ui, -apple-system, sans-serif;
+
+  /* Base canvas architecture */
+  --color-void: #ffffff; /* Stark Clean Chalk White Background */
+  --color-surface: #f8f9fa; /* Light Soft Grey for Base Cards */
+  --color-raised: #ffffff; /* Elevated Container Material */
+  --color-edge: #000000; /* Crisp Solid Black Hairline Borders */
+
+  /* Text states */
+  --color-ghost: #000000; /* Deep Solid Black for Primary Typography */
+  --color-mist: #495057; /* Medium Dark Grey for Secondary Labels */
+
+  /* Solar Accent Palette */
+  --color-plasma: #f9c74f; /* Bright Sunflower Yellow */
+  --color-plasma-light: #f9b24e; /* Solar Amber Core */
+  --color-ion: #f3722c; /* Vivid Electric Orange */
+  --color-flare: #f94144; /* High-Octane Signal Red */
+  --color-volt: #000000; /* High Contrast Black for active elements */
+
+  /* High contrast shadows replacing the blurred auras */
+  --shadow-glow: 4px 4px 0px 0px #000000;
+  --shadow-glow-ion: 4px 4px 0px 0px #f3722c;
+
+  /* Animation Matrices */
+  --animate-cube-spin: cube-spin 26s linear infinite;
+  --animate-cube-spin-rev: cube-spin-rev 18s linear infinite;
+  --animate-rise: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  @keyframes cube-spin {
+    from {
+      transform: rotateX(-24deg) rotateY(0deg);
+    }
+    to {
+      transform: rotateX(-24deg) rotateY(360deg);
+    }
+  }
+  @keyframes cube-spin-rev {
+    from {
+      transform: rotateX(20deg) rotateY(0deg);
+    }
+    to {
+      transform: rotateX(20deg) rotateY(-360deg);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* Remapped utility links */
 :root {
-  --color-obsidian-950: #09090b;
-  --color-chrome-border: #27272a;
+  --font-sans: "Pliant", system-ui, -apple-system, sans-serif;
+  --color-chrome-border: #000000;
 }
 
-body {
-  background-color: var(--color-obsidian-950);
-  color: #f4f4f5;
-  font-family:
-    "Archivo",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-void);
+    color: var(--color-ghost);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-plasma);
+    color: #000000;
+  }
+
+  /* Clean minimal scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-edge) transparent;
+  }
 }
 
-.glass-panel {
-  background: rgba(24, 24, 27, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(39, 39, 42, 0.5);
+/* ==========================================================
+   COMPONENTS (Neo-Brutalist High Contrast Layers)
+   ========================================================== */
+@layer components {
+  /* Crisp Solid Panel Card */
+  .glass-panel {
+    background: var(--color-raised);
+    border: 2px solid var(--color-edge);
+    box-shadow: 4px 4px 0px 0px #000000;
+  }
+
+  /* High contrast text input element */
+  .obsidian-input {
+    background: #ffffff;
+    border: 2px solid var(--color-edge);
+    color: #000000;
+    transition: all 0.15s ease-in-out;
+  }
+
+  .obsidian-input::placeholder {
+    color: var(--color-mist);
+    opacity: 0.6;
+  }
+
+  .obsidian-input:focus {
+    background: #ffffff;
+    border-color: var(--color-ion);
+    box-shadow: 3px 3px 0px 0px #000000;
+    outline: none;
+  }
+
+  /* Asset card grid block */
+  .asset-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-edge);
+    transition: all 0.15s ease-in-out;
+  }
+
+  .asset-card:hover {
+    border-color: var(--color-edge);
+    box-shadow: 6px 6px 0px 0px #000000;
+    transform: translate(-2px, -2px);
+  }
+}
+
+/* ==========================================================
+   CUSTOM RECONFIGURED UTILITIES
+   ========================================================== */
+
+/* Solar Signature Gradient: Yellow ➔ Orange ➔ Red */
+@utility bg-signature {
+  background-image: linear-gradient(
+    to right,
+    var(--color-plasma),
+    var(--color-ion),
+    var(--color-flare)
+  );
+}
+
+@utility text-signature {
+  background-image: linear-gradient(
+    to right,
+    var(--color-ion),
+    var(--color-flare)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* High contrast tech matrix grid lines background */
+@utility bg-wireframe {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Warm solar abstract drop illumination pattern */
+@utility bg-hero-glow {
+  background-image:
+    radial-gradient(
+      45% 55% at 20% 15%,
+      rgba(249, 199, 79, 0.15),
+      transparent 75%
+    ),
+    radial-gradient(
+      40% 50% at 85% 25%,
+      rgba(243, 114, 44, 0.12),
+      transparent 70%
+    );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-card {
+    transition: none;
+  }
+  .asset-card:hover {
+    transform: none;
+  }
 }
