@@ -1,3 +1,4 @@
+import "./config/env.js";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { errorHandler } from "./middlewares/errorHandler.js";
